@@ -41,8 +41,9 @@ typedef enum {
 } led_mode_t;
 
 typedef enum {
-	led_rx = 0, //will also index into array led_state[]
-	led_tx
+	LED_RX = 0, //will also index into array led_state[]
+	LED_TX,
+	LED_MAX
 } led_num_t;
 
 typedef struct {
@@ -68,7 +69,7 @@ typedef struct {
 	uint32_t t_sequence_next;
 	int32_t seq_num_repeat;
 
-	led_state_t led_state[2];
+	led_state_t led_state[LED_MAX];
 } led_data_t;
 
 
