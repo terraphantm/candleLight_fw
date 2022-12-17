@@ -69,7 +69,7 @@ void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 {
 	RCC_PeriphCLKInitTypeDef PeriphClkInit = {
 		.PeriphClockSelection = RCC_PERIPHCLK_FDCAN,
-		.FdcanClockSelection = RCC_FDCANCLKSOURCE_PCLK1,
+		.FdcanClockSelection = RCC_FDCANCLKSOURCE_PLL,
 	};
 
 	HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
