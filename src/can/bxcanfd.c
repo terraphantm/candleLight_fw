@@ -25,6 +25,8 @@ THE SOFTWARE.
 */
 
 #include "can.h"
+#include "config.h"
+#include "gpio.h"
 #include "hal_include.h"
 #include "stm32g0b1xx.h"
 #include "timer.h"
@@ -161,6 +163,10 @@ void can_enable(can_data_t *channel, bool loop_back, bool listen_only, bool one_
 								 FDCAN_ACCEPT_IN_RX_FIFO0, FDCAN_ACCEPT_IN_RX_FIFO0,
 								 FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE);
 
+#ifdef nCANSTBY_Pin
+	HAL_GPIO_WritePin(nCANSTBY_Port, nCANSTBY_Pin, !GPIO_INIT_STATE(nCANSTBY_Active_High));
+#endif
+
 	// Start CAN using HAL
 	HAL_FDCAN_Start(&channel->channel);
 }
@@ -168,6 +174,10 @@ void can_enable(can_data_t *channel, bool loop_back, bool listen_only, bool one_
 void can_disable(can_data_t *channel)
 {
 	HAL_FDCAN_Stop(&channel->channel);
+
+#ifdef nCANSTBY_Pin
+	HAL_GPIO_WritePin(nCANSTBY_Port, nCANSTBY_Pin, GPIO_INIT_STATE(nCANSTBY_Active_High));
+#endif
 }
 
 bool can_is_enabled(can_data_t *channel)
