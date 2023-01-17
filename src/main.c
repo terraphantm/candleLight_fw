@@ -26,7 +26,6 @@ THE SOFTWARE.
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 #include "can.h"
 #include "config.h"
