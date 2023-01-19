@@ -177,6 +177,8 @@ bool can_receive(can_data_t *channel, struct gs_host_frame *rx_frame)
 		}
 
 		rx_frame->can_dlc = fifo->RDTR & CAN_RDT0R_DLC;
+		rx_frame->channel = channel->nr;
+		rx_frame->flags = 0;
 
 		rx_frame->classic_can->data[0] = (fifo->RDLR >>  0) & 0xFF;
 		rx_frame->classic_can->data[1] = (fifo->RDLR >>  8) & 0xFF;

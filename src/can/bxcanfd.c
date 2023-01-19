@@ -202,7 +202,7 @@ bool can_receive(can_data_t *channel, struct gs_host_frame *rx_frame)
 		return false;
 	}
 
-	rx_frame->channel = 0;
+	rx_frame->channel = channel->nr;
 	rx_frame->flags = 0;
 	rx_frame->can_id = RxHeader.Identifier;
 

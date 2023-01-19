@@ -47,6 +47,7 @@ typedef struct {
 	uint8_t phase_seg1;
 	uint8_t phase_seg2;
 	uint8_t sjw;
+	uint8_t nr;
 } can_data_t;
 
 #if defined(STM32G0)
