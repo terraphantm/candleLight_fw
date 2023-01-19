@@ -83,8 +83,15 @@ int main(void)
 		}
 
 		led_set_mode(&channel->leds, led_mode_off);
-
+// TODO(ghent360): fix this
+#ifdef CAN_INTERFACE2
+		if (i == 0)
+			can_init(channel, CAN_INTERFACE);
+		else if (i == 1)
+			can_init(channel, CAN_INTERFACE2);
+#else
 		can_init(channel, CAN_INTERFACE);
+#endif
 		can_disable(channel);
 
 #ifdef CAN_S_GPIO_Port
