@@ -126,6 +126,7 @@ void can_enable(can_data_t *channel, bool loop_back, bool listen_only, bool one_
 #ifdef nCANSTBY_Pin
 	HAL_GPIO_WritePin(nCANSTBY_Port, nCANSTBY_Pin, !GPIO_INIT_STATE(nCANSTBY_Active_High));
 #endif
+    (void)fd_mode;
 }
 
 void can_disable(can_data_t *channel)

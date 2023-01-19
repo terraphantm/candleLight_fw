@@ -403,10 +403,12 @@ static uint8_t USBD_GS_CAN_Config_Request(USBD_HandleTypeDef *pdev, USBD_SetupRe
 			src = &USBD_GS_CAN_btconst;
 			len = sizeof(USBD_GS_CAN_btconst);
 			break;
+#ifdef CONFIG_CANFD
 		case GS_USB_BREQ_BT_CONST_EXT:
 			src = &USBD_GS_CAN_btconst_ext;
 			len = sizeof(USBD_GS_CAN_btconst_ext);
 			break;
+#endif
 		case GS_USB_BREQ_DEVICE_CONFIG:
 			src = &USBD_GS_CAN_dconf;
 			len = sizeof(USBD_GS_CAN_dconf);
@@ -569,6 +571,7 @@ static uint8_t USBD_GS_CAN_EP0_RxReady(USBD_HandleTypeDef *pdev) {
 							  timing->sjw);
 			break;
 		}
+#ifdef CONFIG_CANFD
 		case GS_USB_BREQ_DATA_BITTIMING: {
 			struct gs_device_bittiming *timing;
 
@@ -579,6 +582,7 @@ static uint8_t USBD_GS_CAN_EP0_RxReady(USBD_HandleTypeDef *pdev) {
 							  timing->sjw);
 			break;
 		}
+#endif
 		case GS_USB_BREQ_MODE: {
 			struct gs_device_mode *mode;
 
