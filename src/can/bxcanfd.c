@@ -123,22 +123,30 @@ bool can_set_data_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg
 	}
 }
 
-void can_enable(can_data_t *channel, bool loop_back, bool listen_only, bool one_shot)
+void can_enable(can_data_t *channel, uint32_t mode)
 {
-	bool can_mode_fd = false;
+	if (mode & GS_CAN_MODE_ONE_SHOT) {
+		channel->channel.Init.AutoRetransmission = ENABLE;
+	} else {
+		channel->channel.Init.AutoRetransmission = DISABLE;
+	}
 
-	channel->channel.Init.AutoRetransmission = one_shot ? DISABLE : ENABLE;
-	if (loop_back && listen_only) {
+	if ((mode & (GS_CAN_MODE_LISTEN_ONLY | GS_CAN_MODE_LOOP_BACK)) ==
+		(GS_CAN_MODE_LISTEN_ONLY | GS_CAN_MODE_LOOP_BACK)) {
 		channel->channel.Init.Mode = FDCAN_MODE_INTERNAL_LOOPBACK;
-	} else if (loop_back) {
-		channel->channel.Init.Mode = FDCAN_MODE_EXTERNAL_LOOPBACK;
-	} else if (listen_only) {
+	} else if (mode & GS_CAN_MODE_LISTEN_ONLY) {
 		channel->channel.Init.Mode = FDCAN_MODE_BUS_MONITORING;
+	} else if (mode & GS_CAN_MODE_LOOP_BACK) {
+		channel->channel.Init.Mode = FDCAN_MODE_EXTERNAL_LOOPBACK;
 	} else {
 		channel->channel.Init.Mode = FDCAN_MODE_NORMAL;
 	}
 
-	channel->channel.Init.FrameFormat = can_mode_fd ? FDCAN_FRAME_FD_BRS : FDCAN_FRAME_CLASSIC;
+	if (mode & GS_CAN_MODE_FD) {
+		channel->channel.Init.FrameFormat = FDCAN_FRAME_FD_BRS;
+	} else {
+		channel->channel.Init.FrameFormat = FDCAN_FRAME_CLASSIC;
+	}
 
 	HAL_FDCAN_Init(&channel->channel);
 
