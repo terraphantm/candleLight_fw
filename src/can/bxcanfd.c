@@ -202,6 +202,10 @@ bool can_receive(can_data_t *channel, struct gs_host_frame *rx_frame)
 		if (RxHeader.BitRateSwitch == FDCAN_BRS_ON) {
 			rx_frame->flags |= GS_CAN_FLAG_BRS;
 		}
+
+		if (RxHeader.ErrorStateIndicator == FDCAN_ESI_PASSIVE) {
+			rx_frame->flags |= GS_CAN_FLAG_ESI;
+		}
 	}
 
 	return true;
