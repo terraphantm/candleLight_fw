@@ -77,7 +77,7 @@ bool can_set_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg1, ui
 	}
 }
 
-void can_enable(can_data_t *channel, bool loop_back, bool listen_only, bool one_shot)
+void can_enable(can_data_t *channel, bool loop_back, bool listen_only, bool one_shot, bool fd_mode)
 {
 	CAN_TypeDef *can = channel->instance;
 
