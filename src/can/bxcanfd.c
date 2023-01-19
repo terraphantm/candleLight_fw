@@ -106,10 +106,10 @@ bool can_set_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg1, ui
 
 bool can_set_data_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg1, uint8_t phase_seg2, uint8_t sjw)
 {
-	if ((brp > 0) && (brp <= 1024) &&
-		(phase_seg1 > 0) && (phase_seg1 <= 16) &&
-		(phase_seg2 > 0) && (phase_seg2 <= 8) &&
-		(sjw > 0) && (sjw <= 4)) {
+	if ((brp > 0) && (brp <= 32) &&
+		(phase_seg1 > 0) && (phase_seg1 <= 32) &&
+		(phase_seg2 > 0) && (phase_seg2 <= 16) &&
+		(sjw > 0) && (sjw <= 16)) {
 		channel->channel.Init.DataSyncJumpWidth = sjw;
 		channel->channel.Init.DataTimeSeg1 = phase_seg1;
 		channel->channel.Init.DataTimeSeg2 = phase_seg2;
