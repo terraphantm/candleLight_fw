@@ -240,30 +240,10 @@ static const struct gs_device_bt_const USBD_GS_CAN_btconst = {
 	.brp_inc = 1,
 };
 
-#ifdef CONFIG_CANFD
 static const struct gs_device_bt_const_extended USBD_GS_CAN_btconst_ext = {
-	.feature =
-		GS_CAN_FEATURE_LISTEN_ONLY |
-		GS_CAN_FEATURE_LOOP_BACK |
-		GS_CAN_FEATURE_HW_TIMESTAMP |
-		GS_CAN_FEATURE_IDENTIFY |
-		GS_CAN_FEATURE_PAD_PKTS_TO_MAX_PKT_SIZE |
-		GS_CAN_FEATURE_BT_CONST_EXT
-		| GS_CAN_MODE_FD
-#ifdef TERM_Pin
-		| GS_CAN_FEATURE_TERMINATION
-#endif
-	,
-	.fclk_can = CAN_CLOCK_SPEED,
-	.tseg1_min = 1,
-	.tseg1_max = 16,
-	.tseg2_min = 1,
-	.tseg2_max = 8,
-	.sjw_max = 4,
-	.brp_min = 1,
-	.brp_max = 1024,
-	.brp_inc = 1,
-
+	.bt_const = USBD_GS_CAN_btconst,
+	// Note: these values are from the STM32G0B1 datasheet, may need to be
+	// updated for other MCUs.
 	.dtseg1_min = 1,
 	.dtseg1_max = 32,
 	.dtseg2_min = 1,
@@ -273,8 +253,6 @@ static const struct gs_device_bt_const_extended USBD_GS_CAN_btconst_ext = {
 	.dbrp_max = 32,
 	.dbrp_inc = 1,
 };
-#endif
-
 
 /* It's unclear from the documentation, but it appears that the USB library is
  * not safely reentrant. It attempts to signal errors via return values if it is
@@ -385,30 +363,28 @@ static uint8_t USBD_GS_CAN_Config_Request(USBD_HandleTypeDef *pdev, USBD_SetupRe
 		}
 	}
 
+	if (!IS_ENABLED(CONFIG_CANFD)) {
+		switch (req->bRequest) {
+			case GS_USB_BREQ_DATA_BITTIMING:
+			case GS_USB_BREQ_BT_CONST_EXT:
+				goto out_fail;
+		}
+	}
+
 	switch (req->bRequest) {
-		case GS_USB_BREQ_HOST_FORMAT: {
+		case GS_USB_BREQ_HOST_FORMAT:
 			len = sizeof(struct gs_host_config);
 			break;
-		}
-		case GS_USB_BREQ_DATA_BITTIMING:
-		case GS_USB_BREQ_BITTIMING: {
+		case GS_USB_BREQ_BITTIMING:
 			len = sizeof(struct gs_device_bittiming);
 			break;
-		}
-		case GS_USB_BREQ_MODE: {
+		case GS_USB_BREQ_MODE:
 			len = sizeof(struct gs_device_mode);
 			break;
-		}
 		case GS_USB_BREQ_BT_CONST:
 			src = &USBD_GS_CAN_btconst;
 			len = sizeof(USBD_GS_CAN_btconst);
 			break;
-#ifdef CONFIG_CANFD
-		case GS_USB_BREQ_BT_CONST_EXT:
-			src = &USBD_GS_CAN_btconst_ext;
-			len = sizeof(USBD_GS_CAN_btconst_ext);
-			break;
-#endif
 		case GS_USB_BREQ_DEVICE_CONFIG:
 			src = &USBD_GS_CAN_dconf;
 			len = sizeof(USBD_GS_CAN_dconf);
@@ -417,10 +393,16 @@ static uint8_t USBD_GS_CAN_Config_Request(USBD_HandleTypeDef *pdev, USBD_SetupRe
 			src = &hcan->sof_timestamp_us;
 			len = sizeof(hcan->sof_timestamp_us);
 			break;
-		case GS_USB_BREQ_IDENTIFY: {
+		case GS_USB_BREQ_IDENTIFY:
 			len = sizeof(struct gs_identify_mode);
 			break;
-		}
+		case GS_USB_BREQ_DATA_BITTIMING:
+			len = sizeof(struct gs_device_bittiming);
+			break;
+		case GS_USB_BREQ_BT_CONST_EXT:
+			src = &USBD_GS_CAN_btconst_ext;
+			len = sizeof(USBD_GS_CAN_btconst_ext);
+			break;
 		case GS_USB_BREQ_SET_TERMINATION:
 			if (get_term(req->wValue) == GS_CAN_TERMINATION_UNSUPPORTED) {
 				goto out_fail;
@@ -452,9 +434,9 @@ static uint8_t USBD_GS_CAN_Config_Request(USBD_HandleTypeDef *pdev, USBD_SetupRe
 	switch (req->bRequest) {
 		case GS_USB_BREQ_HOST_FORMAT:
 		case GS_USB_BREQ_BITTIMING:
-		case GS_USB_BREQ_DATA_BITTIMING:
 		case GS_USB_BREQ_MODE:
 		case GS_USB_BREQ_IDENTIFY:
+		case GS_USB_BREQ_DATA_BITTIMING:
 		case GS_USB_BREQ_SET_TERMINATION:
 			if (req->wLength > sizeof(hcan->ep0_buf)) {
 				goto out_fail;
@@ -465,9 +447,9 @@ static uint8_t USBD_GS_CAN_Config_Request(USBD_HandleTypeDef *pdev, USBD_SetupRe
 			break;
 
 		case GS_USB_BREQ_BT_CONST:
-		case GS_USB_BREQ_BT_CONST_EXT:
 		case GS_USB_BREQ_DEVICE_CONFIG:
 		case GS_USB_BREQ_TIMESTAMP:
+		case GS_USB_BREQ_BT_CONST_EXT:
 		case GS_USB_BREQ_GET_TERMINATION:
 			USBD_CtlSendData(pdev, (uint8_t *)src, len);
 			break;
@@ -571,18 +553,6 @@ static uint8_t USBD_GS_CAN_EP0_RxReady(USBD_HandleTypeDef *pdev) {
 							  timing->sjw);
 			break;
 		}
-#ifdef CONFIG_CANFD
-		case GS_USB_BREQ_DATA_BITTIMING: {
-			struct gs_device_bittiming *timing;
-
-			timing = (struct gs_device_bittiming*)hcan->ep0_buf;
-			can_set_data_bittiming(channel, timing->brp,
-							  timing->prop_seg + timing->phase_seg1,
-							  timing->phase_seg2,
-							  timing->sjw);
-			break;
-		}
-#endif
 		case GS_USB_BREQ_MODE: {
 			struct gs_device_mode *mode;
 
@@ -595,13 +565,7 @@ static uint8_t USBD_GS_CAN_EP0_RxReady(USBD_HandleTypeDef *pdev) {
 				hcan->timestamps_enabled = (mode->flags & GS_CAN_MODE_HW_TIMESTAMP) != 0;
 				hcan->pad_pkts_to_max_pkt_size = (mode->flags & GS_CAN_MODE_PAD_PKTS_TO_MAX_PKT_SIZE) != 0;
 
-				can_enable(channel,
-						   (mode->flags & GS_CAN_MODE_LOOP_BACK) != 0,
-						   (mode->flags & GS_CAN_MODE_LISTEN_ONLY) != 0,
-						   (mode->flags & GS_CAN_MODE_ONE_SHOT) != 0,
-						   (mode->flags & GS_CAN_MODE_FD) != 0
-				           // triple sampling not supported on bxCAN
-						   );
+				can_enable(channel, mode->flags);
 
 				led_set_mode(&channel->leds, led_mode_normal);
 			}
@@ -617,6 +581,16 @@ static uint8_t USBD_GS_CAN_EP0_RxReady(USBD_HandleTypeDef *pdev) {
 				led_set_mode(&channel->leds, can_is_enabled(channel) ?
 							 led_mode_normal : led_mode_off);
 			}
+			break;
+		}
+		case GS_USB_BREQ_DATA_BITTIMING: {
+			struct gs_device_bittiming *timing;
+
+			timing = (struct gs_device_bittiming *)hcan->ep0_buf;
+			can_set_data_bittiming(channel, timing->brp,
+								   timing->prop_seg + timing->phase_seg1,
+								   timing->phase_seg2,
+								   timing->sjw);
 			break;
 		}
 		case GS_USB_BREQ_SET_TERMINATION: {

@@ -264,30 +264,30 @@ THE SOFTWARE.
 	#define CAN_INTERFACE2			 FDCAN2
 	#define CAN_CLOCK_SPEED			 40000000
 	#define NUM_CAN_CHANNEL			 1
-//	#define CONFIG_CANFD
+	#define CONFIG_CANFD			 1
 
-	#define nCANSTBY_Port		 GPIOA
-	#define nCANSTBY_Pin		 GPIO_PIN_0    /* control xceiver standby, active low */
-	#define nCANSTBY_Active_High 0
+	#define nCANSTBY_Port			 GPIOA
+	#define nCANSTBY_Pin			 GPIO_PIN_0 /* control xceiver standby, active low */
+	#define nCANSTBY_Active_High	 0
 
-	#define LEDRX_GPIO_Port		 GPIOB
-	#define LEDRX_Pin			 GPIO_PIN_4
-	#define LEDRX_Mode			 GPIO_MODE_OUTPUT_PP
-	#define LEDRX_Active_High	 1
+	#define LEDRX_GPIO_Port			 GPIOB
+	#define LEDRX_Pin				 GPIO_PIN_4
+	#define LEDRX_Mode				 GPIO_MODE_OUTPUT_PP
+	#define LEDRX_Active_High		 1
 
-	#define LEDTX_GPIO_Port		 GPIOB
-	#define LEDTX_Pin			 GPIO_PIN_3
-	#define LEDTX_Mode			 GPIO_MODE_OUTPUT_PP
-	#define LEDTX_Active_High	 1
+	#define LEDTX_GPIO_Port			 GPIOB
+	#define LEDTX_Pin				 GPIO_PIN_3
+	#define LEDTX_Mode				 GPIO_MODE_OUTPUT_PP
+	#define LEDTX_Active_High		 1
 
-	#define USB_GPIO_Port		 GPIOA
-	#define USB_Pin_DM			 GPIO_PIN_11
-	#define USB_Pin_DP			 GPIO_PIN_12
+	#define USB_GPIO_Port			 GPIOA
+	#define USB_Pin_DM				 GPIO_PIN_11
+	#define USB_Pin_DP				 GPIO_PIN_12
 
-	#define TERM_GPIO_Port		 GPIOA
-	#define TERM_Pin			 GPIO_PIN_1
-	#define TERM_Mode			 GPIO_MODE_OUTPUT_PP
-	#define TERM_Active_High	 1
+	#define TERM_GPIO_Port			 GPIOA
+	#define TERM_Pin				 GPIO_PIN_1
+	#define TERM_Mode				 GPIO_MODE_OUTPUT_PP
+	#define TERM_Active_High		 1
 
 #elif defined(BOARD_NUCLEO_G0B1RE)
 	#define USBD_PRODUCT_STRING_FS	 (uint8_t *)"NUCLEO-G0B1RE gs_usb"

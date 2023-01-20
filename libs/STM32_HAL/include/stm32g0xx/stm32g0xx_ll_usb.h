@@ -642,7 +642,7 @@ typedef struct
       (wNBlocks)--; \
     } \
     \
-    (pdwReg) = ((pdwReg) & ~(USB_CNTRX_BLSIZE | USB_CNTRX_NBLK_MSK)) | (uint32_t)((((wNBlocks) << 26U)) | USB_CNTRX_BLSIZE); \
+    (pdwReg) = ((pdwReg) & ~USB_CNTRX_NBLK_MSK) | (uint32_t)((((wNBlocks) << 26U)) | USB_CNTRX_BLSIZE); \
   } while(0) /* USB_DRD_CALC_BLK32 */
 
 #define USB_DRD_CALC_BLK2(pdwReg, wCount, wNBlocks) \
@@ -668,7 +668,7 @@ typedef struct
     { \
       if ((wCount) == 0U) \
       { \
-        (pdwReg) = ((pdwReg) & ~(USB_CNTRX_BLSIZE | USB_CNTRX_NBLK_MSK)) | USB_CNTRX_BLSIZE; \
+        (pdwReg) = ((pdwReg) & ~USB_CNTRX_NBLK_MSK) | USB_CNTRX_BLSIZE; \
       } \
       else \
       { \

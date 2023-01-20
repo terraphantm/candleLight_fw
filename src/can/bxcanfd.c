@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include "gpio.h"
 #include "hal_include.h"
 #include "stm32g0b1xx.h"
+#include "timer.h"
 
 void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 {
@@ -51,7 +52,7 @@ void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 			.Alternate = GPIO_AF3_FDCAN1,
 		};
 
-		__HAL_RCC_GPIOD_CLK_ENABLE();
+		__HAL_RCC_GPIOC_CLK_ENABLE();
 		HAL_GPIO_Init(GPIOC, &itd);
 	} else if (instance == FDCAN2) {
 		GPIO_InitTypeDef itd = {
@@ -122,20 +123,31 @@ bool can_set_data_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg
 	}
 }
 
-void can_enable(can_data_t *channel, bool loop_back, bool listen_only, bool one_shot, bool can_mode_fd)
+void can_enable(can_data_t *channel, uint32_t mode)
 {
-	channel->channel.Init.AutoRetransmission = one_shot ? DISABLE : ENABLE;
-	if (loop_back && listen_only) {
+	if (mode & GS_CAN_MODE_ONE_SHOT) {
+		channel->channel.Init.AutoRetransmission = ENABLE;
+	} else {
+		channel->channel.Init.AutoRetransmission = DISABLE;
+	}
+
+	if ((mode & (GS_CAN_MODE_LISTEN_ONLY | GS_CAN_MODE_LOOP_BACK)) ==
+		(GS_CAN_MODE_LISTEN_ONLY | GS_CAN_MODE_LOOP_BACK)) {
 		channel->channel.Init.Mode = FDCAN_MODE_INTERNAL_LOOPBACK;
-	} else if (loop_back) {
-		channel->channel.Init.Mode = FDCAN_MODE_EXTERNAL_LOOPBACK;
-	} else if (listen_only) {
+	} else if (mode & GS_CAN_MODE_LISTEN_ONLY) {
 		channel->channel.Init.Mode = FDCAN_MODE_BUS_MONITORING;
+	} else if (mode & GS_CAN_MODE_LOOP_BACK) {
+		channel->channel.Init.Mode = FDCAN_MODE_EXTERNAL_LOOPBACK;
 	} else {
 		channel->channel.Init.Mode = FDCAN_MODE_NORMAL;
 	}
 
-	channel->channel.Init.FrameFormat = can_mode_fd ? FDCAN_FRAME_FD_BRS : FDCAN_FRAME_CLASSIC;
+	if (mode & GS_CAN_MODE_FD) {
+		//TODO(ghent360): some more thinking needs to go here, not all FD frames use BRS.
+		channel->channel.Init.FrameFormat = FDCAN_FRAME_FD_BRS;
+	} else {
+		channel->channel.Init.FrameFormat = FDCAN_FRAME_CLASSIC;
+	}
 
 	HAL_FDCAN_Init(&channel->channel);
 
@@ -185,12 +197,13 @@ bool can_is_enabled(can_data_t *channel)
 bool can_receive(can_data_t *channel, struct gs_host_frame *rx_frame)
 {
 	FDCAN_RxHeaderTypeDef RxHeader;
+	uint32_t timestamp_us = timer_get();
 
 	if (HAL_FDCAN_GetRxMessage(&channel->channel, FDCAN_RX_FIFO0, &RxHeader, rx_frame->canfd->data) != HAL_OK) {
 		return false;
 	}
 
-	rx_frame->channel = channel->channel.Instance == CAN_INTERFACE2 ? 1 : 0;
+	rx_frame->channel = channel->nr;
 	rx_frame->flags = 0;
 	rx_frame->can_id = RxHeader.Identifier;
 
@@ -205,11 +218,19 @@ bool can_receive(can_data_t *channel, struct gs_host_frame *rx_frame)
 	rx_frame->can_dlc = (RxHeader.DataLength & 0x000F0000) >> 16;
 
 	if (RxHeader.FDFormat == FDCAN_FD_CAN) {
+		rx_frame->canfd_ts->timestamp_us = timestamp_us;
+
 		/* this is a CAN-FD frame */
 		rx_frame->flags = GS_CAN_FLAG_FD;
 		if (RxHeader.BitRateSwitch == FDCAN_BRS_ON) {
 			rx_frame->flags |= GS_CAN_FLAG_BRS;
 		}
+
+		if (RxHeader.ErrorStateIndicator == FDCAN_ESI_PASSIVE) {
+			rx_frame->flags |= GS_CAN_FLAG_ESI;
+		}
+	} else {
+		rx_frame->classic_can_ts->timestamp_us = timestamp_us;
 	}
 
 	return true;
