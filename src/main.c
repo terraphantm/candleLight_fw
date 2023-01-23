@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "board.h"
 #include "can.h"
 #include "can_common.h"
 #include "config.h"
@@ -85,7 +86,7 @@ int main(void)
 
 		led_set_mode(&channel->leds, led_mode_off);
 
-		can_init(channel, CAN_INTERFACE);
+		can_init(channel, config.channels[i].interface);
 		can_disable(channel);
 
 #ifdef CAN_S_GPIO_Port
