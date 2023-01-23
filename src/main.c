@@ -56,7 +56,7 @@ int main(void)
 	HAL_Init();
 	SystemClock_Config();
 
-	gpio_init();
+	config.setup(&hGS_CAN);
 	timer_init();
 
 	INIT_LIST_HEAD(&hGS_CAN.list_frame_pool);
