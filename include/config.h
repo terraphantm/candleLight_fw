@@ -299,11 +299,11 @@ THE SOFTWARE.
 	#define CAN_INTERFACE			 FDCAN1
 	#define CAN_INTERFACE2			 FDCAN2
 	#define CAN_CLOCK_SPEED			 40000000
-	#define NUM_CAN_CHANNEL			 2
+	#define NUM_CAN_CHANNEL			 1
 	#define CONFIG_CANFD			 1
 
 	#define LEDRX_GPIO_Port	  GPIOA
-	#define LEDRX_Pin		  GPIO_PIN_5
+	#define LEDRX_Pin		  GPIO_PIN_6
 	#define LEDRX_Mode		  GPIO_MODE_OUTPUT_PP
 	#define LEDRX_Active_High 1
 
