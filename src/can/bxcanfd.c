@@ -91,10 +91,10 @@ void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 
 bool can_set_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg1, uint8_t phase_seg2, uint8_t sjw)
 {
-	if ((brp > 0) && (brp <= 1024) &&
-		(phase_seg1 > 0) && (phase_seg1 <= 16) &&
-		(phase_seg2 > 0) && (phase_seg2 <= 8) &&
-		(sjw > 0) && (sjw <= 4)) {
+	if ((brp > 0) && (brp <= 512) &&
+		(phase_seg1 > 1) /*&& (phase_seg1 <= 256)*/ &&
+		(phase_seg2 > 1) && (phase_seg2 <= 128) &&
+		(sjw > 0) && (sjw <= 128)) {
 		channel->channel.Init.NominalSyncJumpWidth = sjw;
 		channel->channel.Init.NominalTimeSeg1 = phase_seg1;
 		channel->channel.Init.NominalTimeSeg2 = phase_seg2;
@@ -107,6 +107,7 @@ bool can_set_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg1, ui
 	return 0;
 }
 
+#if CONFIG_CANFD
 bool can_set_data_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg1, uint8_t phase_seg2, uint8_t sjw)
 {
 	if ((brp > 0) && (brp <= 32) &&
@@ -122,6 +123,7 @@ bool can_set_data_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg
 		return false;
 	}
 }
+#endif
 
 void can_enable(can_data_t *channel, uint32_t mode)
 {
