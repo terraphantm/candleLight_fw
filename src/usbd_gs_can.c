@@ -231,12 +231,12 @@ static const struct gs_device_bt_const USBD_GS_CAN_btconst = {
 	,
 	.fclk_can = CAN_CLOCK_SPEED,
 	.tseg1_min = 1,
-	.tseg1_max = 16,
+	.tseg1_max = 256,
 	.tseg2_min = 1,
-	.tseg2_max = 8,
-	.sjw_max = 4,
+	.tseg2_max = 128,
+	.sjw_max = 128,
 	.brp_min = 1,
-	.brp_max = 1024,
+	.brp_max = 512,
 	.brp_inc = 1,
 };
 
@@ -835,7 +835,7 @@ static uint8_t USBD_GS_CAN_SendFrame(USBD_HandleTypeDef *pdev, struct gs_host_fr
 	 * for now.
 	 */
 	if (hcan->pad_pkts_to_max_pkt_size &&
-		!(IS_ENABLED(CONFIG_CANFD) && frame->flags & GS_CAN_FLAG_FD)) {
+		(!(IS_ENABLED(CONFIG_CANFD) || (frame->flags & GS_CAN_FLAG_FD) == 0))) {
 		memcpy(buf, frame, len);
 
 		// zero rest of buffer
