@@ -127,7 +127,10 @@ void CAN_HandleError(USBD_GS_CAN_HandleTypeDef *hcan, can_data_t *channel)
 	restore_irq(was_irq_enabled);
 
 	struct gs_host_frame *frame = &frame_object->frame;
-	frame->classic_can_ts->timestamp_us = timer_get();
+	if (frame->flags & GS_CAN_FLAG_FD)
+		frame->canfd_ts->timestamp_us = timer_get();
+	else
+		frame->classic_can_ts->timestamp_us = timer_get();
 
 	if (can_parse_error_status(channel, frame, can_err)) {
 		list_add_tail_locked(&frame_object->list, &hcan->list_to_host);
