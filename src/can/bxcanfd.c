@@ -143,7 +143,6 @@ void can_enable(can_data_t *channel, uint32_t mode)
 	}
 
 	if (mode & GS_CAN_MODE_FD) {
-		//TODO(ghent360): some more thinking needs to go here, not all FD frames use BRS.
 		channel->channel.Init.FrameFormat = FDCAN_FRAME_FD_BRS;
 	} else {
 		channel->channel.Init.FrameFormat = FDCAN_FRAME_CLASSIC;
@@ -266,6 +265,11 @@ bool can_send(can_data_t *channel, struct gs_host_frame *frame)
 			TxHeader.BitRateSwitch = FDCAN_BRS_ON;
 		} else {
 			TxHeader.BitRateSwitch = FDCAN_BRS_OFF;
+		}
+		if (frame->flags & GS_CAN_FLAG_ESI) {
+			TxHeader.ErrorStateIndicator = FDCAN_ESI_PASSIVE;
+		} else {
+			TxHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
 		}
 	} else {
 		TxHeader.BitRateSwitch = FDCAN_BRS_OFF;
