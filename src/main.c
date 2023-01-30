@@ -66,6 +66,18 @@ int main(void)
 		list_add_tail(&hGS_CAN.msgbuf[i].list, &hGS_CAN.list_frame_pool);
 	}
 
+#if defined(BOARD_MKS_UTC)
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+	GPIO_InitTypeDef itd = {
+		.Pin = LEDRX_Pin,
+		.Mode = GPIO_MODE_OUTPUT_PP,
+		.Pull = GPIO_NOPULL,
+		.Speed = GPIO_SPEED_FREQ_LOW,
+	};
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	HAL_GPIO_Init(GPIOD, &itd);
+#endif
+
 	for (unsigned int i = 0; i < ARRAY_SIZE(hGS_CAN.channels); i++) {
 		can_data_t *channel = &hGS_CAN.channels[i];
 

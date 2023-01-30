@@ -44,6 +44,18 @@ void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 	// Setup GPIO
 	// TODO needs to changed for two channel setup
 	if (instance == FDCAN1) {
+#if defined(BOARD_MKS_UTC)
+		GPIO_InitTypeDef itd = {
+			.Pin = GPIO_PIN_8 | GPIO_PIN_9,
+			.Mode = GPIO_MODE_AF_PP,
+			.Pull = GPIO_NOPULL,
+			.Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+			.Alternate = GPIO_AF3_FDCAN1,
+		};
+
+		__HAL_RCC_GPIOB_CLK_ENABLE();
+		HAL_GPIO_Init(GPIOB, &itd);
+#else
 		GPIO_InitTypeDef itd = {
 			.Pin = GPIO_PIN_4 | GPIO_PIN_5,
 			.Mode = GPIO_MODE_AF_PP,
@@ -54,6 +66,7 @@ void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 
 		__HAL_RCC_GPIOC_CLK_ENABLE();
 		HAL_GPIO_Init(GPIOC, &itd);
+#endif
 	} else if (instance == FDCAN2) {
 		GPIO_InitTypeDef itd = {
 			.Pin = GPIO_PIN_2 | GPIO_PIN_3,
