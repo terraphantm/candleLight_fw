@@ -48,7 +48,7 @@ void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 			.Pin = GPIO_PIN_4 | GPIO_PIN_5,
 			.Mode = GPIO_MODE_AF_PP,
 			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW,
+			.Speed = GPIO_SPEED_FREQ_VERY_HIGH,
 			.Alternate = GPIO_AF3_FDCAN1,
 		};
 
@@ -59,7 +59,7 @@ void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 			.Pin = GPIO_PIN_2 | GPIO_PIN_3,
 			.Mode = GPIO_MODE_AF_PP,
 			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW,
+			.Speed = GPIO_SPEED_FREQ_VERY_HIGH,
 			.Alternate = GPIO_AF3_FDCAN2,
 		};
 
@@ -172,6 +172,8 @@ void can_enable(can_data_t *channel, uint32_t mode)
 	HAL_FDCAN_ConfigGlobalFilter(&channel->channel,
 								 FDCAN_ACCEPT_IN_RX_FIFO0, FDCAN_ACCEPT_IN_RX_FIFO0,
 								 FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE);
+
+	HAL_FDCAN_EnableISOMode(&channel->channel);
 
 #ifdef nCANSTBY_Pin
 	HAL_GPIO_WritePin(nCANSTBY_Port, nCANSTBY_Pin, !GPIO_INIT_STATE(nCANSTBY_Active_High));
