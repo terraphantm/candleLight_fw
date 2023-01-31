@@ -99,7 +99,8 @@ void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 	channel->channel.Init.StdFiltersNbr = 0;
 	channel->channel.Init.ExtFiltersNbr = 0;
 	channel->channel.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
-	HAL_FDCAN_Init(&channel->channel);
+	// I don't think we need to call Init here, we to that in can_enable.
+	//HAL_FDCAN_Init(&channel->channel);
 }
 
 bool can_set_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg1, uint8_t phase_seg2, uint8_t sjw)

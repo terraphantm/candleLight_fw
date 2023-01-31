@@ -26,7 +26,7 @@ add_compile_options(
 #need these later, per-platform
 set(CPUFLAGS_F0 -mcpu=cortex-m0)
 set(CPUFLAGS_F4 -mcpu=cortex-m4)
-set(CPUFLAGS_G0 -mcpu=cortex-m0)
+set(CPUFLAGS_G0 -mcpu=cortex-m0plus)
 
 add_link_options(
 	--specs=nano.specs
