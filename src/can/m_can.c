@@ -38,18 +38,22 @@ const struct gs_device_bt_const CAN_btconst = {
 		GS_CAN_FEATURE_HW_TIMESTAMP |
 		GS_CAN_FEATURE_IDENTIFY |
 		GS_CAN_FEATURE_PAD_PKTS_TO_MAX_PKT_SIZE
+#ifdef CONFIG_CANFD
+		| GS_CAN_MODE_FD
+		| GS_CAN_FEATURE_BT_CONST_EXT
+#endif
 #ifdef TERM_Pin
 		| GS_CAN_FEATURE_TERMINATION
 #endif
 	,
 	.fclk_can = CAN_CLOCK_SPEED,
 	.tseg1_min = 1,
-	.tseg1_max = 16,
+	.tseg1_max = 256,
 	.tseg2_min = 1,
-	.tseg2_max = 8,
-	.sjw_max = 4,
+	.tseg2_max = 128,
+	.sjw_max = 128,
 	.brp_min = 1,
-	.brp_max = 1024,
+	.brp_max = 512,
 	.brp_inc = 1,
 };
 
@@ -68,40 +72,6 @@ const struct gs_device_bt_const_extended CAN_btconst_ext = {
 
 void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 {
-	RCC_PeriphCLKInitTypeDef PeriphClkInit = {
-		.PeriphClockSelection = RCC_PERIPHCLK_FDCAN,
-		.FdcanClockSelection = RCC_FDCANCLKSOURCE_PLL,
-	};
-
-	HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
-	__HAL_RCC_FDCAN_CLK_ENABLE(); // TODO: make sure we only do this once ?
-
-	// Setup GPIO
-	// TODO needs to changed for two channel setup
-	if (instance == FDCAN1) {
-		GPIO_InitTypeDef itd = {
-			.Pin = GPIO_PIN_0 | GPIO_PIN_1,
-			.Mode = GPIO_MODE_AF_PP,
-			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW,
-			.Alternate = GPIO_AF3_FDCAN1,
-		};
-
-		__HAL_RCC_GPIOD_CLK_ENABLE();
-		HAL_GPIO_Init(GPIOD, &itd);
-	} else if (instance == FDCAN2) {
-		GPIO_InitTypeDef itd = {
-			.Pin = GPIO_PIN_4 | GPIO_PIN_5,
-			.Mode = GPIO_MODE_AF_PP,
-			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW,
-			.Alternate = GPIO_AF3_FDCAN1,
-		};
-
-		__HAL_RCC_GPIOC_CLK_ENABLE();
-		HAL_GPIO_Init(GPIOC, &itd);
-	}
-
 	// setup CAN FD useing the HAL lib
 	channel->channel.Instance = instance;
 	channel->channel.Init.ClockDivider = FDCAN_CLOCK_DIV1;
@@ -121,7 +91,8 @@ void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 	channel->channel.Init.StdFiltersNbr = 0;
 	channel->channel.Init.ExtFiltersNbr = 0;
 	channel->channel.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
-	HAL_FDCAN_Init(&channel->channel);
+	// I don't think we need to call Init here, we to that in can_enable.
+	//HAL_FDCAN_Init(&channel->channel);
 }
 
 void can_set_bittiming(can_data_t *channel, const struct gs_device_bittiming *timing)
@@ -191,6 +162,8 @@ void can_enable(can_data_t *channel, uint32_t mode)
 	HAL_FDCAN_ConfigGlobalFilter(&channel->channel,
 								 FDCAN_ACCEPT_IN_RX_FIFO0, FDCAN_ACCEPT_IN_RX_FIFO0,
 								 FDCAN_FILTER_REMOTE, FDCAN_FILTER_REMOTE);
+
+	HAL_FDCAN_EnableISOMode(&channel->channel);
 
 	config.phy_power_set(channel, true);
 
