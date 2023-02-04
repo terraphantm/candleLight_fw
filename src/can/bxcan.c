@@ -24,12 +24,36 @@
 
  */
 
+#include "board.h"
 #include "can.h"
 #include "config.h"
 #include "device.h"
 #include "gpio.h"
 #include "gs_usb.h"
 #include "hal_include.h"
+#include "timer.h"
+
+const struct gs_device_bt_const CAN_btconst = {
+	.feature =
+		GS_CAN_FEATURE_LISTEN_ONLY |
+		GS_CAN_FEATURE_LOOP_BACK |
+		GS_CAN_FEATURE_HW_TIMESTAMP |
+		GS_CAN_FEATURE_IDENTIFY |
+		GS_CAN_FEATURE_PAD_PKTS_TO_MAX_PKT_SIZE
+#ifdef TERM_Pin
+		| GS_CAN_FEATURE_TERMINATION
+#endif
+	,
+	.fclk_can = CAN_CLOCK_SPEED,
+	.tseg1_min = 1,
+	.tseg1_max = 16,
+	.tseg2_min = 1,
+	.tseg2_max = 8,
+	.sjw_max = 4,
+	.brp_min = 1,
+	.brp_max = 1024,
+	.brp_inc = 1,
+};
 
 // The STM32F0 only has one CAN interface, define it as CAN1 as
 // well, so it doesn't need to be handled separately.
@@ -60,21 +84,14 @@ void can_init(can_data_t *channel, CAN_TypeDef *instance)
 	device_can_init(channel, instance);
 }
 
-bool can_set_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg1, uint8_t phase_seg2, uint8_t sjw)
+void can_set_bittiming(can_data_t *channel, const struct gs_device_bittiming *timing)
 {
-	if (  (brp>0) && (brp<=1024)
-	   && (phase_seg1>0) && (phase_seg1<=16)
-	   && (phase_seg2>0) && (phase_seg2<=8)
-	   && (sjw>0) && (sjw<=4)
-		  ) {
-		channel->brp = brp & 0x3FF;
-		channel->phase_seg1 = phase_seg1;
-		channel->phase_seg2 = phase_seg2;
-		channel->sjw = sjw;
-		return true;
-	} else {
-		return false;
-	}
+	const uint8_t tseg1 = timing->prop_seg + timing->phase_seg1;
+
+	channel->brp = timing->brp;
+	channel->phase_seg1 = tseg1;
+	channel->phase_seg2 = timing->phase_seg2;
+	channel->sjw = timing->sjw;
 }
 
 void can_enable(can_data_t *channel, uint32_t mode)
@@ -131,17 +148,14 @@ void can_enable(can_data_t *channel, uint32_t mode)
 	can->FA1R |= filter_bit;         // enable filter
 	can->FMR &= ~CAN_FMR_FINIT;
 
-#ifdef nCANSTBY_Pin
-	HAL_GPIO_WritePin(nCANSTBY_Port, nCANSTBY_Pin, !GPIO_INIT_STATE(nCANSTBY_Active_High));
-#endif
+	config.phy_power_set(channel, true);
 }
 
 void can_disable(can_data_t *channel)
 {
 	CAN_TypeDef *can = channel->instance;
-#ifdef nCANSTBY_Pin
-	HAL_GPIO_WritePin(nCANSTBY_Port, nCANSTBY_Pin, GPIO_INIT_STATE(nCANSTBY_Active_High));
-#endif
+
+	config.phy_power_set(channel, false);
 	can->MCR |= CAN_MCR_INRQ;     // send can controller into initialization mode
 }
 

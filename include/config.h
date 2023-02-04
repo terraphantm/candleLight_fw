@@ -40,7 +40,7 @@ THE SOFTWARE.
 
 #include "version.h"
 
-#define CAN_QUEUE_SIZE				 64
+#define CAN_QUEUE_SIZE				 (64 * NUM_CAN_CHANNEL)
 
 #define USBD_VID					 0x1d50
 #define USBD_PID_FS					 0x606f
@@ -260,15 +260,9 @@ THE SOFTWARE.
 
 	#define TIM2_CLOCK_SPEED		 64000000
 
-	#define CAN_INTERFACE			 FDCAN1
-	#define CAN_INTERFACE2			 FDCAN2
 	#define CAN_CLOCK_SPEED			 40000000
-	#define NUM_CAN_CHANNEL			 1
+	#define NUM_CAN_CHANNEL			 2
 	#define CONFIG_CANFD			 1
-
-	#define nCANSTBY_Port			 GPIOA
-	#define nCANSTBY_Pin			 GPIO_PIN_0 /* control xceiver standby, active low */
-	#define nCANSTBY_Active_High	 0
 
 	#define LEDRX_GPIO_Port			 GPIOB
 	#define LEDRX_Pin				 GPIO_PIN_4
@@ -280,16 +274,7 @@ THE SOFTWARE.
 	#define LEDTX_Mode				 GPIO_MODE_OUTPUT_PP
 	#define LEDTX_Active_High		 1
 
-	#define USB_GPIO_Port			 GPIOA
-	#define USB_Pin_DM				 GPIO_PIN_11
-	#define USB_Pin_DP				 GPIO_PIN_12
-
-	#define TERM_GPIO_Port			 GPIOA
-	#define TERM_Pin				 GPIO_PIN_1
-	#define TERM_Mode				 GPIO_MODE_OUTPUT_PP
-	#define TERM_Active_High		 1
-
-#elif defined(BOARD_NUCLEO_G0B1RE)
+#elif defined(BOARD_nucleo_g0b1re)
 	#define USBD_PRODUCT_STRING_FS	 (uint8_t *)"NUCLEO-G0B1RE gs_usb"
 	#define USBD_MANUFACTURER_STRING (uint8_t *)"STMicroelectronics"
 	#define DFU_INTERFACE_STRING_FS	 (uint8_t *)"NUCLEO-G0B1RE firmware upgrade interface"
