@@ -507,7 +507,7 @@ static uint8_t USBD_GS_CAN_EP0_RxReady(USBD_HandleTypeDef *pdev) {
 			const struct gs_device_bittiming *timing = (struct gs_device_bittiming *)hcan->ep0_buf;
 
 			err = can_check_bittiming(&CAN_btconst.btc, timing);
-			if (err)
+			if (!err)
 				goto out_fail;
 
 			can_set_bittiming(channel, timing);
@@ -547,7 +547,7 @@ static uint8_t USBD_GS_CAN_EP0_RxReady(USBD_HandleTypeDef *pdev) {
 			const struct gs_device_bittiming *timing = (struct gs_device_bittiming *)hcan->ep0_buf;
 
 			err = can_check_bittiming(&CAN_btconst_ext.dbtc, timing);
-			if (err)
+			if (!err)
 				goto out_fail;
 
 			can_set_data_bittiming(channel, timing);
