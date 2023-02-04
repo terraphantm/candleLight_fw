@@ -87,7 +87,7 @@ void legacy_setup(USBD_GS_CAN_HandleTypeDef *hcan) {
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 	__HAL_RCC_GPIOC_CLK_ENABLE();
-#if defined(STM32F4) || defined(BOARD_mks_utc)
+#if defined(STM32F4)
 	__HAL_RCC_GPIOD_CLK_ENABLE();
 #endif
 
