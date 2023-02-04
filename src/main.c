@@ -26,10 +26,10 @@ THE SOFTWARE.
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdlib.h>
 
-#include "can_common.h"
+#include "board.h"
 #include "can.h"
+#include "can_common.h"
 #include "config.h"
 #include "device.h"
 #include "dfu.h"
@@ -56,7 +56,7 @@ int main(void)
 	HAL_Init();
 	SystemClock_Config();
 
-	gpio_init();
+	config.setup(&hGS_CAN);
 	timer_init();
 
 	INIT_LIST_HEAD(&hGS_CAN.list_frame_pool);
@@ -85,20 +85,9 @@ int main(void)
 		}
 
 		led_set_mode(&channel->leds, led_mode_off);
-// TODO(ghent360): fix this
-#ifdef CAN_INTERFACE2
-		if (i == 0)
-			can_init(channel, CAN_INTERFACE);
-		else if (i == 1)
-			can_init(channel, CAN_INTERFACE2);
-#else
-		can_init(channel, CAN_INTERFACE);
-#endif
-		can_disable(channel);
 
-#ifdef CAN_S_GPIO_Port
-		HAL_GPIO_WritePin(CAN_S_GPIO_Port, CAN_S_Pin, GPIO_PIN_RESET);
-#endif
+		can_init(channel, config.channels[i].interface);
+		can_disable(channel);
 	}
 
 	USBD_Init(&hUSB, (USBD_DescriptorsTypeDef*)&FS_Desc, DEVICE_FS);

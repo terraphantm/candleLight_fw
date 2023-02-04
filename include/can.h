@@ -51,29 +51,30 @@ typedef struct {
 	uint8_t nr;
 } can_data_t;
 
+extern const struct gs_device_bt_const CAN_btconst;
+extern const struct gs_device_bt_const_extended CAN_btconst_ext;
+
 #if defined(STM32G0)
 void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance);
 #else
 void can_init(can_data_t *channel, CAN_TypeDef *instance);
 #endif
-bool can_set_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg1, uint8_t phase_seg2, uint8_t sjw);
+bool can_check_bittiming(const struct can_bittiming_const *btc, const struct gs_device_bittiming *timing);
+void can_set_bittiming(can_data_t *channel, const struct gs_device_bittiming *timing);
 
 #ifdef CONFIG_CANFD
-bool can_set_data_bittiming(can_data_t *channel, uint16_t brp, uint8_t phase_seg1, uint8_t phase_seg2, uint8_t sjw);
+void can_set_data_bittiming(can_data_t *channel, const struct gs_device_bittiming *timing);
 #else
-static inline bool can_set_data_bittiming(can_data_t *channel, uint16_t brp,
-										  uint8_t phase_seg1,
-										  uint8_t phase_seg2, uint8_t sjw)
+static inline bool can_set_data_bittiming(can_data_t *channel,
+										  const struct gs_device_bittiming *timing)
 {
 	(void)channel;
-	(void)brp;
-	(void)phase_seg1;
-	(void)phase_seg2;
-	(void)sjw;
+	(void)timing;
 
-	return true;
+	return false;
 }
 #endif
+
 void can_enable(can_data_t *channel, uint32_t mode);
 void can_disable(can_data_t *channel);
 bool can_is_enabled(can_data_t *channel);
