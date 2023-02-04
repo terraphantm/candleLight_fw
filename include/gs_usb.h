@@ -312,10 +312,6 @@ struct gs_identify_mode {
 	u32 mode;
 } __packed __aligned(4);
 
-struct gs_identify_mode {
-	u32 mode;
-} __packed __aligned(4);
-
 struct gs_device_termination_state {
 	u32 state;
 } __packed __aligned(4);
