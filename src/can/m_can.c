@@ -37,19 +37,21 @@ const struct gs_device_bt_const CAN_btconst = {
 		GS_CAN_FEATURE_LOOP_BACK |
 		GS_CAN_FEATURE_HW_TIMESTAMP |
 		GS_CAN_FEATURE_IDENTIFY |
-		GS_CAN_FEATURE_PAD_PKTS_TO_MAX_PKT_SIZE
+		GS_CAN_FEATURE_PAD_PKTS_TO_MAX_PKT_SIZE |
+		(IS_ENABLED(CONFIG_CANFD) ?
+		 GS_CAN_FEATURE_FD | GS_CAN_FEATURE_BT_CONST_EXT : 0)
 #ifdef TERM_Pin
 		| GS_CAN_FEATURE_TERMINATION
 #endif
 	,
 	.fclk_can = CAN_CLOCK_SPEED,
 	.tseg1_min = 1,
-	.tseg1_max = 16,
+	.tseg1_max = 256,
 	.tseg2_min = 1,
-	.tseg2_max = 8,
-	.sjw_max = 4,
+	.tseg2_max = 128,
+	.sjw_max = 128,
 	.brp_min = 1,
-	.brp_max = 1024,
+	.brp_max = 512,
 	.brp_inc = 1,
 };
 
@@ -60,7 +62,7 @@ const struct gs_device_bt_const_extended CAN_btconst_ext = {
 	.dtseg1_max = 32,
 	.dtseg2_min = 1,
 	.dtseg2_max = 16,
-	.dsjw_max = 32,
+	.dsjw_max = 16,
 	.dbrp_min = 1,
 	.dbrp_max = 32,
 	.dbrp_inc = 1,
@@ -68,41 +70,6 @@ const struct gs_device_bt_const_extended CAN_btconst_ext = {
 
 void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 {
-	RCC_PeriphCLKInitTypeDef PeriphClkInit = {
-		.PeriphClockSelection = RCC_PERIPHCLK_FDCAN,
-		.FdcanClockSelection = RCC_FDCANCLKSOURCE_PLL,
-	};
-
-	HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
-	__HAL_RCC_FDCAN_CLK_ENABLE(); // TODO: make sure we only do this once ?
-
-	// Setup GPIO
-	// TODO needs to changed for two channel setup
-	if (instance == FDCAN1) {
-		GPIO_InitTypeDef itd = {
-			.Pin = GPIO_PIN_0 | GPIO_PIN_1,
-			.Mode = GPIO_MODE_AF_PP,
-			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW,
-			.Alternate = GPIO_AF3_FDCAN1,
-		};
-
-		__HAL_RCC_GPIOD_CLK_ENABLE();
-		HAL_GPIO_Init(GPIOD, &itd);
-	} else if (instance == FDCAN2) {
-		GPIO_InitTypeDef itd = {
-			.Pin = GPIO_PIN_4 | GPIO_PIN_5,
-			.Mode = GPIO_MODE_AF_PP,
-			.Pull = GPIO_NOPULL,
-			.Speed = GPIO_SPEED_FREQ_LOW,
-			.Alternate = GPIO_AF3_FDCAN1,
-		};
-
-		__HAL_RCC_GPIOC_CLK_ENABLE();
-		HAL_GPIO_Init(GPIOC, &itd);
-	}
-
-	// setup CAN FD useing the HAL lib
 	channel->channel.Instance = instance;
 	channel->channel.Init.ClockDivider = FDCAN_CLOCK_DIV1;
 	channel->channel.Init.FrameFormat = FDCAN_FRAME_FD_BRS;
@@ -121,7 +88,6 @@ void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance)
 	channel->channel.Init.StdFiltersNbr = 0;
 	channel->channel.Init.ExtFiltersNbr = 0;
 	channel->channel.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
-	HAL_FDCAN_Init(&channel->channel);
 }
 
 void can_set_bittiming(can_data_t *channel, const struct gs_device_bittiming *timing)
@@ -261,7 +227,7 @@ bool can_send(can_data_t *channel, struct gs_host_frame *frame)
 {
 	FDCAN_TxHeaderTypeDef TxHeader = {
 		.DataLength = frame->can_dlc << 16,
-		.TxEventFifoControl = FDCAN_NO_TX_EVENTS,
+			.TxEventFifoControl = FDCAN_NO_TX_EVENTS,
 	};
 
 	TxHeader.TxFrameType =

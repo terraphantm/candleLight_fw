@@ -59,7 +59,6 @@ void can_init(can_data_t *channel, FDCAN_GlobalTypeDef *instance);
 #else
 void can_init(can_data_t *channel, CAN_TypeDef *instance);
 #endif
-bool can_check_bittiming(const struct can_bittiming_const *btc, const struct gs_device_bittiming *timing);
 void can_set_bittiming(can_data_t *channel, const struct gs_device_bittiming *timing);
 
 #ifdef CONFIG_CANFD
