@@ -36,6 +36,9 @@ THE SOFTWARE.
 #define nCANSTBY_Pin		 GPIO_PIN_0     /* control xceiver standby, active low */
 #define nCANSTBY_Active_High 0
 
+// These are still defined in config.h
+// No need to re-define them here
+#if 0
 #define LEDRX_GPIO_Port		 GPIOB
 #define LEDRX_Pin			 GPIO_PIN_4
 #define LEDRX_Mode			 GPIO_MODE_OUTPUT_PP
@@ -45,6 +48,7 @@ THE SOFTWARE.
 #define LEDTX_Pin			 GPIO_PIN_3
 #define LEDTX_Mode			 GPIO_MODE_OUTPUT_PP
 #define LEDTX_Active_High	 1
+#endif
 
 static void nucleo_g0b1re_setup(USBD_GS_CAN_HandleTypeDef *hcan)
 {

@@ -77,7 +77,7 @@ THE SOFTWARE.
  * - struct gs_device_termination_state
  */
 #define GS_CAN_FEATURE_TERMINATION				(1<<11)
-#define GS_CAN_FEATURE_BERR_REPORTINGBIT		(1<<12)
+#define GS_CAN_FEATURE_BERR_REPORTING			(1<<12)
 #define GS_CAN_FEATURE_GET_STATE				(1<<13)
 
 #define GS_CAN_FLAG_OVERFLOW					(1<<0)
@@ -256,7 +256,7 @@ struct can_bittiming_const {
 	u32 brp_min;
 	u32 brp_max;
 	u32 brp_inc;
-};
+} __packed __aligned(4);
 
 struct gs_device_bt_const {
 	u32 feature;

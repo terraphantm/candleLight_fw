@@ -28,6 +28,7 @@ THE SOFTWARE.
 #include <string.h>
 
 #include "can.h"
+#include "can_common.h"
 #include "compiler.h"
 #include "config.h"
 #include "gpio.h"
