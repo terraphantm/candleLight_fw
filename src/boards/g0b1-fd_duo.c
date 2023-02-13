@@ -44,7 +44,12 @@ static void fd_duo_setup(USBD_GS_CAN_HandleTypeDef *hcan)
 
 	/* LEDs & nCANSTBY pins*/
 
-	HAL_GPIO_WritePin(LEDRX_GPIO_Port, LEDRX_Pin, GPIO_INIT_STATE(LEDRX_Active_High));
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_INIT_STATE(0));
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_INIT_STATE(0));
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_INIT_STATE(0));
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_INIT_STATE(0));
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_SET);
 	GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -106,18 +111,18 @@ const struct BoardConfig config = {
 	.channels[1].interface = FDCAN2,
 	.leds[0] = {
 		.led_rx_port = GPIOB,
-		.led_rx_pin = GPIO_PIN_12,
-		.led_rx_active_high = 0,
-		.led_tx_port = GPIOB,
-		.led_tx_pin = GPIO_PIN_11,
-		.led_tx_active_high = 0,
-	},
-	.leds[1] = {
-		.led_rx_port = GPIOB,
 		.led_rx_pin = GPIO_PIN_5,
 		.led_rx_active_high = 0,
 		.led_tx_port = GPIOB,
 		.led_tx_pin = GPIO_PIN_4,
+		.led_tx_active_high = 0,
+	},
+	.leds[1] = {
+		.led_rx_port = GPIOB,
+		.led_rx_pin = GPIO_PIN_11,
+		.led_rx_active_high = 0,
+		.led_tx_port = GPIOB,
+		.led_tx_pin = GPIO_PIN_12,
 		.led_tx_active_high = 0,
 	},
 };

@@ -327,16 +327,6 @@ THE SOFTWARE.
 	#define NUM_CAN_CHANNEL			 2
 	#define CONFIG_CANFD			 1
 
-	#define LEDRX_GPIO_Port	  GPIOB
-	#define LEDRX_Pin		  GPIO_PIN_5
-	#define LEDRX_Mode		  GPIO_MODE_OUTPUT_PP
-	#define LEDRX_Active_High 0
-
-	#define LEDTX_GPIO_Port	  GPIOB
-	#define LEDTX_Pin		  GPIO_PIN_4
-	#define LEDTX_Mode		  GPIO_MODE_OUTPUT_PP
-	#define LEDTX_Active_High 0
-
 #elif defined(BOARD_STM32F4_DevBoard)
 	#define USBD_PRODUCT_STRING_FS	 (uint8_t*) "STM32F4VE Dev Board"
 	#define USBD_MANUFACTURER_STRING (uint8_t*) "misc"
