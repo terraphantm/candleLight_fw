@@ -74,14 +74,14 @@ int main(void)
 		INIT_LIST_HEAD(&channel->list_from_host);
 
 		led_init(&channel->leds,
-				 LEDRX_GPIO_Port, LEDRX_Pin, LEDRX_Active_High,
-				 LEDTX_GPIO_Port, LEDTX_Pin, LEDTX_Active_High);
+				 config.leds[i].led_rx_port, config.leds[i].led_rx_pin, config.leds[i].led_rx_active_high,
+				 config.leds[i].led_tx_port, config.leds[i].led_tx_pin, config.leds[i].led_tx_active_high);
 
 		/* nice wake-up pattern */
 		for (uint8_t j = 0; j < 10; j++) {
-			HAL_GPIO_TogglePin(LEDRX_GPIO_Port, LEDRX_Pin);
+			HAL_GPIO_TogglePin(config.leds[i].led_rx_port, config.leds[i].led_rx_pin);
 			HAL_Delay(50);
-			HAL_GPIO_TogglePin(LEDTX_GPIO_Port, LEDTX_Pin);
+			HAL_GPIO_TogglePin(config.leds[i].led_tx_port, config.leds[i].led_tx_pin);
 		}
 
 		led_set_mode(&channel->leds, led_mode_off);

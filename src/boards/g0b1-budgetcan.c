@@ -166,4 +166,20 @@ const struct BoardConfig config = {
 	.termination_set = nucleo_g0b1re_termination_set,
 	.channels[0].interface = FDCAN1,
 	.channels[1].interface = FDCAN2,
+	.leds[0] = {
+		.led_rx_port = LEDRX_GPIO_Port,
+		.led_rx_pin = LEDRX_Pin,
+		.led_rx_active_high = LEDRX_Active_High,
+		.led_tx_port = LEDTX_GPIO_Port,
+		.led_tx_pin = LEDTX_Pin,
+		.led_tx_active_high = LEDTX_Active_High,
+	},
+	.leds[1] = {
+		.led_rx_port = LEDRX_GPIO_Port,
+		.led_rx_pin = LEDRX_Pin,
+		.led_rx_active_high = LEDRX_Active_High,
+		.led_tx_port = LEDTX_GPIO_Port,
+		.led_tx_pin = LEDTX_Pin,
+		.led_tx_active_high = LEDTX_Active_High,
+	},
 };

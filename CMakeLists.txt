@@ -194,7 +194,7 @@ populate_ldscript(CPU_FAMILY STM32F407XE
 )
 
 populate_ldscript(CPU_FAMILY STM32G0B1XK
-	FLASH_START 0x08002000
+	FLASH_START 0x08000000
 	FLASH_SIZE 512k
 	RAM_START 0x20000000
 	RAM_SIZE 144k
@@ -269,7 +269,7 @@ endfunction()
 set(TGTF042_LIST "cantact" "canalyze" "canable" "usb2can" "cannette")
 set(TGTF072_LIST "candleLight" "CANable_MKS" "CONVERTDEVICE_xCAN")
 set(TGTF407_LIST "STM32F4_DevBoard")
-set(TGTG0B1_LIST "budgetcan" "nucleo_g0b1re" "mks_utc")
+set(TGTG0B1_LIST "budgetcan" "nucleo_g0b1re" "mks_utc" "fd_duo")
 
 foreach (TGTNAME IN LISTS TGTF042_LIST)
 	option(BUILD_${TGTNAME} "Build firmware for \"${TGTNAME}\" (default=yes)" ON)
