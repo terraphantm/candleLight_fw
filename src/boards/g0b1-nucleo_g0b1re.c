@@ -34,15 +34,15 @@ THE SOFTWARE.
 // These are still defined in config.h
 // No need to re-define them here
 #if 0
-#define LEDRX_GPIO_Port			 GPIOA
-#define LEDRX_Pin				 GPIO_PIN_5
-#define LEDRX_Mode				 GPIO_MODE_OUTPUT_PP
-#define LEDRX_Active_High		 1
+#define LEDRX_GPIO_Port	  GPIOA
+#define LEDRX_Pin		  GPIO_PIN_5
+#define LEDRX_Mode		  GPIO_MODE_OUTPUT_PP
+#define LEDRX_Active_High 1
 
-#define LEDTX_GPIO_Port			 GPIOA
-#define LEDTX_Pin				 GPIO_PIN_5
-#define LEDTX_Mode				 GPIO_MODE_OUTPUT_PP
-#define LEDTX_Active_High		 1
+#define LEDTX_GPIO_Port	  GPIOA
+#define LEDTX_Pin		  GPIO_PIN_5
+#define LEDTX_Mode		  GPIO_MODE_OUTPUT_PP
+#define LEDTX_Active_High 1
 #endif
 
 static void nucleo_g0b1re_setup(USBD_GS_CAN_HandleTypeDef *hcan)
@@ -52,7 +52,7 @@ static void nucleo_g0b1re_setup(USBD_GS_CAN_HandleTypeDef *hcan)
 	UNUSED(hcan);
 
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-    __HAL_RCC_GPIOC_CLK_ENABLE();
+	__HAL_RCC_GPIOC_CLK_ENABLE();
 	__HAL_RCC_GPIOD_CLK_ENABLE();
 
 	HAL_GPIO_WritePin(LEDRX_GPIO_Port, LEDRX_Pin, GPIO_INIT_STATE(LEDRX_Active_High));
@@ -72,20 +72,20 @@ static void nucleo_g0b1re_setup(USBD_GS_CAN_HandleTypeDef *hcan)
 	HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit);
 	__HAL_RCC_FDCAN_CLK_ENABLE();
 	/* FDCAN1_RX, FDCAN1_TX */
-    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF3_FDCAN1;
-    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Alternate = GPIO_AF3_FDCAN1;
+	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 	/* FDCAN2_RX, FDCAN2_TX */
-    GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF3_FDCAN2;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Alternate = GPIO_AF3_FDCAN2;
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 }
 
 static void nucleo_g0b1re_phy_power_set(can_data_t *channel, bool enable)
