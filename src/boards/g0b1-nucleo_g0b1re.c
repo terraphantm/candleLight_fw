@@ -31,17 +31,6 @@ THE SOFTWARE.
 #include "gpio.h"
 #include "usbd_gs_can.h"
 
-<<<<<<< HEAD
-#define LEDRX_GPIO_Port			 GPIOA
-#define LEDRX_Pin				 GPIO_PIN_5
-#define LEDRX_Mode				 GPIO_MODE_OUTPUT_PP
-#define LEDRX_Active_High		 1
-
-#define LEDTX_GPIO_Port			 GPIOA
-#define LEDTX_Pin				 GPIO_PIN_5
-#define LEDTX_Mode				 GPIO_MODE_OUTPUT_PP
-#define LEDTX_Active_High		 1
-=======
 #define LEDRX_GPIO_Port	  GPIOA
 #define LEDRX_Pin		  GPIO_PIN_5
 #define LEDRX_Mode		  GPIO_MODE_OUTPUT_PP
@@ -51,7 +40,6 @@ THE SOFTWARE.
 #define LEDTX_Pin		  GPIO_PIN_5
 #define LEDTX_Mode		  GPIO_MODE_OUTPUT_PP
 #define LEDTX_Active_High 1
->>>>>>> 55b2fdb8b841201cf873986ab3cd223e6681804e
 
 static void nucleo_g0b1re_setup(USBD_GS_CAN_HandleTypeDef *hcan)
 {
@@ -60,11 +48,7 @@ static void nucleo_g0b1re_setup(USBD_GS_CAN_HandleTypeDef *hcan)
 	UNUSED(hcan);
 
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-<<<<<<< HEAD
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-=======
 	__HAL_RCC_GPIOC_CLK_ENABLE();
->>>>>>> 55b2fdb8b841201cf873986ab3cd223e6681804e
 	__HAL_RCC_GPIOD_CLK_ENABLE();
 
 	HAL_GPIO_WritePin(LEDRX_GPIO_Port, LEDRX_Pin, GPIO_INIT_STATE(LEDRX_Active_High));
