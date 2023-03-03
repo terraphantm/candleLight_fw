@@ -93,14 +93,14 @@ static void btt_u2c_setup(USBD_GS_CAN_HandleTypeDef *hcan)
 }
 
 static void
-mks_utc_phy_power_set(can_data_t *channel, bool enable)
+btt_u2c_phy_power_set(can_data_t *channel, bool enable)
 {
     UNUSED(channel);
     UNUSED(enable);
 }
 
 static void
-mks_utc_termination_set(can_data_t *channel,
+btt_u2c_termination_set(can_data_t *channel,
 					    enum gs_can_termination_state enable)
 {
     UNUSED(channel);
@@ -108,9 +108,9 @@ mks_utc_termination_set(can_data_t *channel,
 }
 
 const struct BoardConfig config = {
-	.setup = mks_utc_setup,
-	.phy_power_set = mks_utc_phy_power_set,
-	.termination_set = mks_utc_termination_set,
+	.setup = btt_u2c_setup,
+	.phy_power_set = btt_u2c_phy_power_set,
+	.termination_set = btt_u2c_termination_set,
 	.channels[0].interface = FDCAN2,
 	.leds[0] = {
 		.led_rx_port = LEDRX_GPIO_Port,
