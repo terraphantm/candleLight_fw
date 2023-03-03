@@ -316,6 +316,27 @@ THE SOFTWARE.
 	#define LEDTX_Mode		  GPIO_MODE_OUTPUT_PP
 	#define LEDTX_Active_High 1
 
+#elif defined(BOARD_btt_u2c)
+	#define USBD_PRODUCT_STRING_FS	 (uint8_t *)"BTT U2C gs_usb"
+	#define USBD_MANUFACTURER_STRING (uint8_t *)"BigTreeTech"
+	#define DFU_INTERFACE_STRING_FS	 (uint8_t *)"BTT U2C firmware upgrade interface"
+
+	#define TIM2_CLOCK_SPEED		 64000000
+
+	#define CAN_CLOCK_SPEED			 80000000
+	#define NUM_CAN_CHANNEL			 1
+	#define CONFIG_CANFD			 1
+
+	#define LEDRX_GPIO_Port	  GPIOA
+	#define LEDRX_Pin		  GPIO_PIN_13
+	#define LEDRX_Mode		  GPIO_MODE_OUTPUT_PP
+	#define LEDRX_Active_High 1
+
+	#define LEDTX_GPIO_Port	  GPIOA
+	#define LEDTX_Pin		  GPIO_PIN_13
+	#define LEDTX_Mode		  GPIO_MODE_OUTPUT_PP
+	#define LEDTX_Active_High 1
+
 #elif defined(BOARD_fd_duo)
 	#define USBD_PRODUCT_STRING_FS	 (uint8_t *)"FD DUO gs_usb"
 	#define USBD_MANUFACTURER_STRING (uint8_t *)"iqury.us"
